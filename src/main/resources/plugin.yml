@@ -1,0 +1,20 @@
+name: NexusMagic
+version: ${project.version}
+main: com.nexusuniverse.magic.NexusMagicPlugin
+api-version: '1.21'
+author: Nexus Universe
+description: Elemental magic -- craft a staff or bow for any of nine elements (Ice, Fire, Water, Lightning, Earth, Wind, Poison, Light, Dark) using three thematic ingredients across the top of a crafting table with two sticks (staff) or two string (bow) below, pickaxe-style. Right-click to fire a bolt that damages and afflicts whatever it hits and can leave a temporary elemental effect on the ground where it lands. A wizard level (1-100), earned by casting and by combat, governs the risk/reward curve -- low-level wizards risk a real chance of the magic backfiring on them for real damage, while high-level wizards barely risk that anymore and hit harder and earn more for it instead.
+
+commands:
+  nexusmagic:
+    description: Check your wizard level, look up every element's recipe, or (admin) hand out gear and adjust levels.
+    aliases: [magic, wizard]
+    usage: /nexusmagic <status [player]|elements|give <player> <element> <staff|bow>|setlevel <player> <level>|reload>
+
+permissions:
+  nexusmagic.use:
+    description: Check wizard status and look up element recipes.
+    default: true
+  nexusmagic.admin:
+    description: Hand out staves/bows, set a player's wizard level, and reload config.
+    default: op

@@ -1,0 +1,159 @@
+# NexusMagic configuration. Every number here is deliberately plain config -- retune the whole
+# risk/reward curve, every element's ingredients/effects, or the ground-effect footprint without
+# touching a line of code.
+
+enabled: true
+
+# How a staff/bow actually behaves when it's fired.
+casting:
+  # Cooldown between casts, per player, regardless of element or item (prevents spam-clicking).
+  cooldown-ticks: 20
+  # Radius (in blocks) and lifetime (in seconds) of the temporary ground effect a spell leaves
+  # where it lands, for elements that have a ground-block configured below.
+  ground-effect-radius: 2
+  ground-effect-duration-seconds: 20
+
+# The wizard level curve (1 to max-level) and how it's earned.
+leveling:
+  max-level: 100
+  # XP needed to go from level N to N+1 is xp-base + (N-1) * xp-growth-per-level -- a slow,
+  # steadily steepening climb so level 100 is a genuine long-term achievement.
+  xp-base: 50
+  xp-growth-per-level: 25
+  # XP awarded for landing a magic hit on something, before the reward multiplier below is applied.
+  xp-per-cast-hit: 4.0
+  # Flat XP awarded for any kill (mob or player) -- the "combat" side of leveling, independent of
+  # whether magic was involved in the kill at all.
+  xp-per-kill: 2.0
+
+# The risk-to-reward curve itself. At level 1 a wizard is genuinely dangerous to themselves; by
+# max-level the risk has all but vanished and both their damage output and the XP they earn per
+# cast have grown well past where they started -- the "switches over and balances out" the user
+# asked for. Every value below is linearly interpolated across the level range.
+risk-reward:
+  min-backfire-chance: 0.02   # chance of backfiring on the wizard themselves, at max level
+  max-backfire-chance: 0.35   # chance of backfiring, at level 1
+  min-backfire-damage: 1.0    # self-damage dealt by a backfire, at max level
+  max-backfire-damage: 6.0    # self-damage dealt by a backfire, at level 1
+  min-damage-multiplier: 0.6  # multiplier on every element's on-hit-damage, at level 1
+  max-damage-multiplier: 2.0  # multiplier on every element's on-hit-damage, at max level
+  min-reward-multiplier: 0.5  # multiplier on xp-per-cast-hit, at level 1
+  max-reward-multiplier: 2.5  # multiplier on xp-per-cast-hit, at max level
+
+# Every element: its three crafting ingredients (real vanilla materials -- swap freely), its
+# on-hit damage/effects, an optional temporary ground-effect block, and a "special" behavior for
+# the handful of elements that need more than a plain damage+effect combo.
+#
+# Recipe shape (both use the ingredients in this exact top-row order):
+#   Staff (a custom-enchanted stick):  XYZ / _S_ / _S_   (S = stick)   -- same shape as a pickaxe.
+#   Bow (a custom-enchanted bow):      XYZ / _T_ / _T_   (T = string)  -- same shape, string instead
+#                                                                          of sticks, since a real
+#                                                                          bow is made of string.
+elements:
+  ice:
+    enabled: true
+    display-name: "Ice"
+    color: "AQUA"
+    ingredients: [ICE, SNOW_BLOCK, PACKED_ICE]
+    on-hit-damage: 3.0
+    on-hit-effects:
+      - {type: SLOWNESS, seconds: 5, amplifier: 1}
+      - {type: WEAKNESS, seconds: 5, amplifier: 0}
+    hit-message: "Frostbite sets in."
+    ground-block: SNOW_BLOCK
+    special: NONE
+  fire:
+    enabled: true
+    display-name: "Fire"
+    color: "RED"
+    ingredients: [BLAZE_POWDER, MAGMA_CREAM, COAL]
+    on-hit-damage: 4.0
+    on-hit-effects:
+      - {type: WEAKNESS, seconds: 3, amplifier: 0}
+    hit-message: "Set ablaze."
+    ground-block: null
+    special: IGNITE
+    special-fire-ticks: 100
+  water:
+    enabled: true
+    display-name: "Water"
+    color: "DARK_AQUA"
+    ingredients: [PRISMARINE_CRYSTALS, KELP, SPONGE]
+    on-hit-damage: 2.0
+    on-hit-effects:
+      - {type: SLOWNESS, seconds: 4, amplifier: 2}
+    hit-message: "Swept off their feet."
+    ground-block: WATER
+    ground-effect-duration-seconds: 10
+    special: WATER_PUSH
+    special-knockback: 1.3
+  lightning:
+    enabled: true
+    display-name: "Lightning"
+    color: "YELLOW"
+    ingredients: [LIGHTNING_ROD, COPPER_INGOT, REDSTONE]
+    on-hit-damage: 5.0
+    on-hit-effects:
+      - {type: WEAKNESS, seconds: 4, amplifier: 1}
+    hit-message: "Struck by lightning."
+    ground-block: null
+    special: LIGHTNING_STRIKE
+  earth:
+    enabled: true
+    display-name: "Earth"
+    color: "GOLD"
+    ingredients: [DIRT, COARSE_DIRT, MUD]
+    on-hit-damage: 3.5
+    on-hit-effects:
+      - {type: SLOWNESS, seconds: 6, amplifier: 1}
+    hit-message: "Rooted to the ground."
+    ground-block: MUD
+    special: NONE
+  wind:
+    enabled: true
+    display-name: "Wind"
+    color: "WHITE"
+    ingredients: [FEATHER, PHANTOM_MEMBRANE, BREEZE_ROD]
+    on-hit-damage: 2.5
+    on-hit-effects:
+      - {type: LEVITATION, seconds: 2, amplifier: 0}
+    hit-message: "Caught in a gust."
+    ground-block: null
+    special: GUST_KNOCKBACK
+    special-knockback: 1.8
+  poison:
+    enabled: true
+    display-name: "Poison"
+    color: "DARK_GREEN"
+    ingredients: [SPIDER_EYE, FERMENTED_SPIDER_EYE, POISONOUS_POTATO]
+    on-hit-damage: 2.0
+    on-hit-effects:
+      - {type: POISON, seconds: 6, amplifier: 1}
+      - {type: NAUSEA, seconds: 4, amplifier: 0}
+    hit-message: "Poisoned."
+    ground-block: null
+    special: NONE
+  light:
+    enabled: true
+    display-name: "Light"
+    color: "YELLOW"
+    ingredients: [GLOWSTONE_DUST, GLOW_BERRIES, GLOW_INK_SAC]
+    on-hit-damage: 3.0
+    on-hit-effects:
+      - {type: GLOWING, seconds: 8, amplifier: 0}
+    hit-message: "Exposed by the light."
+    ground-block: GLOWSTONE
+    ground-effect-duration-seconds: 30
+    special: NONE
+  dark:
+    enabled: true
+    display-name: "Dark"
+    color: "DARK_GRAY"
+    ingredients: [COAL, SOUL_SAND, WITHER_ROSE]
+    on-hit-damage: 4.0
+    on-hit-effects:
+      - {type: WITHER, seconds: 5, amplifier: 1}
+      - {type: BLINDNESS, seconds: 3, amplifier: 0}
+    hit-message: "Cursed by the dark."
+    ground-block: SOUL_SAND
+    special: NONE
